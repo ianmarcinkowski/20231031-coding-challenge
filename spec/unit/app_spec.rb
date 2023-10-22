@@ -162,7 +162,7 @@ describe 'App' do
         [company],
         [active_user]
       )
-      report = update_user_balances(database)
+      report = update_user_balances!(database)
       expect(database[1][:users].first).to include({ :tokens => 123 })
     end
 
@@ -171,7 +171,7 @@ describe 'App' do
         [company],
         [active_user]
       )
-      report = update_user_balances(database)
+      report = update_user_balances!(database)
       expect(database[1][:top_ups_given]).to eq(23)
     end
   end

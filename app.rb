@@ -17,6 +17,7 @@ end
 
 def app(companies, users)
   database = build_database(companies, users)
+  update_user_balances!(database)
   report = ""
   database.values.map do |company|
     report += build_company_report(company)
@@ -40,7 +41,7 @@ def build_database(companies, users)
   database
 end
 
-def update_user_balances(database)
+def update_user_balances!(database)
   database.values.map do |company|
     unless company[:top_ups_given]
       company[:top_ups_given] = 0
