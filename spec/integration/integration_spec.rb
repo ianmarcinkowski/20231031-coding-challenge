@@ -2,25 +2,25 @@ require_relative '../../app'
 
 describe 'Guiding Test' do
   describe 'App' do
-    it 'returns a text entry for a company and user' do
-      users = [{
-         :id => 1,
-         :first_name => "Tanya",
-         :last_name => "Nichols",
-         :email => "tanya.nichols@test.com",
-         :company_id => 1,
-         :email_status => true,
-         :active_status => true,
-         :tokens => 23
-      }]
-      companies = [{
-         :id => 1,
-         :name => "Blue Cat Inc.",
-         :top_up => 71,
-         :email_status => false
-      }]
+    it 'creates text output for a company and user' do
+      raw_users = '[{
+         "id": 1,
+         "first_name": "Tanya",
+         "last_name": "Nichols",
+         "email": "tanya.nichols@test.com",
+         "company_id": 1,
+         "email_status": true,
+         "active_status": true,
+         "tokens": 23
+      }]'
+      raw_companies = '[{
+         "id": 1,
+         "name": "Blue Cat Inc.",
+         "top_up": 71,
+         "email_status": false
+      }]'
 
-      text = app(companies, users)
+      text = app(raw_companies, raw_users)
 
       expect(text).not_to be_nil
       expect(text).to include("Company Id: 1")

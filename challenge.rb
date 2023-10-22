@@ -12,7 +12,7 @@ class Parser
         args[:company_file] = path
       end
 
-      parser.on("-uUSERS", "--users=USERS", String, "Users JSON file") do |path|
+      parser.on("-u", "--users=USERS", String, "Users JSON file") do |path|
         args[:user_file] = path
       end
 
@@ -39,7 +39,7 @@ def run_challenge(args)
   end
 
   puts args
-  app(args[:company_file], args[:user_file])
+  entry_point(args[:company_file], args[:user_file])
 end
 
 args = Parser.parse(ARGV)
