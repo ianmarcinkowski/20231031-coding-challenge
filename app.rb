@@ -1,5 +1,4 @@
 require 'json'
-require_relative 'file_utils'
 
 # Create an entrypoint to separate the concerns of running this application
 # as a script from the domain logic.
@@ -17,6 +16,11 @@ end
 
 def app(companies, users)
   index = create_index(companies, users)
+  report = ""
+  index.values.map do |company|
+    report += build_company_report(company)
+  end
+  report
 end
 
 def create_index(companies, users)
@@ -31,4 +35,11 @@ def create_index(companies, users)
     index[company_id][:users].append user
   end
   index
+end
+
+def build_company_report(company)
+  report = <<~REPORT
+    Company Id: #{company[:id]}
+    Company Name: #{company[:name]}
+    REPORT
 end
