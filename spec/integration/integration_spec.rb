@@ -3,7 +3,7 @@ require_relative '../../app'
 describe 'Guiding Test' do
   describe 'App' do
     it 'creates text output for a company and user' do
-      raw_users = '[{
+      users = [{
          "id": 1,
          "first_name": "Tanya",
          "last_name": "Nichols",
@@ -12,15 +12,15 @@ describe 'Guiding Test' do
          "email_status": true,
          "active_status": true,
          "tokens": 23
-      }]'
-      raw_companies = '[{
+      }]
+      companies = [{
          "id": 1,
          "name": "Blue Cat Inc.",
          "top_up": 71,
          "email_status": false
-      }]'
+      }]
 
-      text = app(raw_companies, raw_users)
+      text = app(companies, users)
 
       expect(text).not_to be_nil
       expect(text).to include("Company Id: 1")

@@ -1,16 +1,18 @@
+require 'json'
 require_relative 'file_utils'
 
 # Create an entrypoint to separate the concerns of running this application
-# as a script from the interesting business logic.
-def entry_point(companies_file, users_file)
-  puts "companies file: #{companies_file}"
-  puts "users file: #{users_file}"
+# as a script from the domain logic.
+def entry_point(companies_path, users_path)
+  puts "companies file: #{companies_path}"
+  puts "users file: #{users_path}"
 
-  raw_companies = read_file_content(companies_file)
-  raw_users = read_file_content(users_file)
-  app(raw_companies, raw_users)
+  companies_file = File.open companies_path
+  users_file = File.open users_path
+
+  companies = JSON.load companies_file
+  users = JSON.load users_file
+  app(companies, users)
 end
-
-def app(companies_string, users_string)
 
 end
