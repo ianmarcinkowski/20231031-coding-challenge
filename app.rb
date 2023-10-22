@@ -40,6 +40,20 @@ def build_database(companies, users)
   database
 end
 
+def update_user_balances(database)
+  database.values.map do |company|
+    unless company[:top_ups_given]
+      company[:top_ups_given] = 0
+    end
+    top_up_amount = company[:top_up]
+    company[:users].filter { |user| user[:active_status] }.map do |user|
+      user[:tokens] += top_up_amount
+      company[:top_ups_given] += top_up_amount
+    end
+  end
+  database
+end
+
 def build_company_report(company)
   report = <<~REPORT
     Company Id: #{company[:id]}
