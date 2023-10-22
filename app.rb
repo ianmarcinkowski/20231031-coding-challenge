@@ -11,7 +11,8 @@ def entry_point(companies_path, users_path)
 
   companies = JSON.load companies_file
   users = JSON.load users_file
-  app(companies, users)
+  report = app(companies, users)
+  puts report
 end
 
 def app(companies, users)
@@ -21,10 +22,6 @@ def app(companies, users)
     report += build_company_report(company)
   end
   report
-end
-
-def symbolize_keys(a_hash)
-  a_hash.transform_keys(&:to_sym)
 end
 
 def build_database(companies, users)
@@ -47,5 +44,39 @@ def build_company_report(company)
   report = <<~REPORT
     Company Id: #{company[:id]}
     Company Name: #{company[:name]}
+  REPORT
+
+  emailed_users = company[:users].filter {
+    |user| user[:email_status] && user[:active_status]
+  }
+  report += <<~REPORT
+    Users Emailed:
     REPORT
+  emailed_users.map do |user|
+    report += build_user_report(user)
+  end
+
+  not_emailed_users = company[:users].filter {
+    |user| !user[:email_status] || !user[:active_status]
+  }
+  report += <<~REPORT
+    Users Not Emailed:
+    REPORT
+  not_emailed_users.map do |user|
+    report += build_user_report(user)
+  end
+
+  report
+end
+
+def build_user_report(user)
+  report = <<~REPORT
+    #{user[:last_name]}, #{user[:first_name]}, #{user[:email]}
+      Previous Token Balance, #{user[:tokens]}
+      New Token Balance #{user[:previous_tokens]}
+  REPORT
+end
+
+def symbolize_keys(a_hash)
+  a_hash.transform_keys(&:to_sym)
 end

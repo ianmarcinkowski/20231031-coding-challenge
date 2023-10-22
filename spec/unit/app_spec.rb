@@ -13,14 +13,22 @@ describe 'App' do
     {
       "id": 5,
       "company_id": 1,
-      "name": "Tanya T"
+      "first_name": "Tanya",
+      "last_name": "T",
+      "email": "tanyat@example.com",
+      "tokens": 99,
+      "previous_tokens": 54
     }
   }
   let(:user_two) {
     {
       "id": 99,
       "company_id": 1,
-      "name": "Majid M"
+      "first_name": "Majid",
+      "last_name": "M",
+      "email": "majidm@example.com",
+      "tokens": 0,
+      "previous_tokens": 1000
     }
   }
   describe 'symbolize_keys' do
@@ -113,6 +121,19 @@ describe 'App' do
       expect(report).to match <<~FILE.chomp
         Company Id: 1
         Company Name: ACME inc.
+      FILE
+
+    end
+  end
+
+  describe 'build_user_report' do
+    describe 'users'
+    it 'contains company details' do
+      report = build_user_report(user_one)
+      expect(report).to match <<~FILE.chomp
+        T, Tanya, tanyat@example.com
+          Previous Token Balance, 99
+          New Token Balance 54
       FILE
 
     end

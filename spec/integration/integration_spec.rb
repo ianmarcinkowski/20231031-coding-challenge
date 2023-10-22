@@ -11,7 +11,7 @@ describe 'Guiding Test' do
          "company_id": 1,
          "email_status": true,
          "active_status": true,
-         "tokens": 23
+         "tokens": 23,
       }]
       companies = [{
          "id": 1,
