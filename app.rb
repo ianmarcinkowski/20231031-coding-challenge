@@ -90,6 +90,10 @@ def build_company_report(company)
     report += build_user_report(user)
   end
 
+  report += <<~REPORT
+    Total amount of top ups for #{company[:name]}: #{company[:top_ups_given]}
+  REPORT
+
   report
 end
 
