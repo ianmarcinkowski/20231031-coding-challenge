@@ -15,4 +15,20 @@ def entry_point(companies_path, users_path)
   app(companies, users)
 end
 
+def app(companies, users)
+  index = create_index(companies, users)
+end
+
+def create_index(companies, users)
+  index = {}
+  companies.map do |company|
+    company[:users] = []
+    company_id = company[:id]
+    index[company_id] = company
+  end
+  users.map do |user|
+    company_id = user[:company_id]
+    index[company_id][:users].append user
+  end
+  index
 end
