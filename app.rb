@@ -19,7 +19,7 @@ def app(companies, users)
   database = build_database(companies, users)
   process_token_top_ups!(database)
   report = ""
-  database.values.map do |company|
+  database.map do |id, company|
     report += build_company_report(company)
   end
   report
@@ -38,11 +38,11 @@ def build_database(companies, users)
     company_id = user[:company_id]
     database[company_id][:users].append user
   end
-  database
+  database = database.sort
 end
 
 def process_token_top_ups!(database)
-  database.values.map do |company|
+  database.map do |id, company|
     unless company[:top_ups_given]
       company[:top_ups_given] = 0
     end

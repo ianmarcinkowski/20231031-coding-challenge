@@ -66,5 +66,28 @@ describe 'Guiding Test' do
           S, Sam, sams@example.com
       TEXT
     end
+
+    context "sorting" do
+      let(:company99) {
+        {
+          "id": 99,
+          "name": "New Hip Co.",
+          "top_up": 99,
+          "email_status": true
+        }
+      }
+
+      it 'sorts by company ID' do
+        users = []
+        companies = [company99, company]
+
+        text = app(companies, users)
+
+        expect(text).not_to be_nil
+        company_one_idx = text.index("Company Id: 1")
+        company_ninty_nine_idx = text.index("Company Id: 99")
+        expect(company_one_idx).to be < company_ninty_nine_idx
+      end
+    end
   end
 end

@@ -68,7 +68,7 @@ describe 'App' do
       ]
 
       database = build_database(companies, users)
-      company = database[1]
+      _, company = database[0]
       expect(company).to include({
                                    :id => 1,
                                    :name => "ACME inc.",
@@ -94,8 +94,8 @@ describe 'App' do
       ]
 
       database = build_database(companies, users)
-      company_users = database[1][:users]
-      expect(company_users.size).to eq(2)
+      _, company = database[0]
+      expect(company[:users].size).to eq(2)
     end
   end
 
@@ -172,7 +172,8 @@ describe 'App' do
         [active_user]
       )
       report = process_token_top_ups!(database)
-      expect(database[1][:users].first).to include({ :tokens => 123 })
+      _, company = database[0]
+      expect(company[:users].first).to include({ :tokens => 123 })
     end
 
     it 'tracks top ups given' do
@@ -181,7 +182,8 @@ describe 'App' do
         [active_user]
       )
       report = process_token_top_ups!(database)
-      expect(database[1][:top_ups_given]).to eq(23)
+      _, company = database[0]
+      expect(company[:top_ups_given]).to eq(23)
     end
   end
 
