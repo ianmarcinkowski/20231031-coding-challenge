@@ -15,26 +15,32 @@ def entry_point(companies_path, users_path)
 end
 
 def app(companies, users)
-  index = create_index(companies, users)
+  database = build_database(companies, users)
   report = ""
-  index.values.map do |company|
+  database.values.map do |company|
     report += build_company_report(company)
   end
   report
 end
 
-def create_index(companies, users)
-  index = {}
+def symbolize_keys(a_hash)
+  a_hash.transform_keys(&:to_sym)
+end
+
+def build_database(companies, users)
+  database = {}
   companies.map do |company|
+    company = symbolize_keys(company)
     company[:users] = []
     company_id = company[:id]
-    index[company_id] = company
+    database[company_id] = company
   end
   users.map do |user|
+    user = symbolize_keys(user)
     company_id = user[:company_id]
-    index[company_id][:users].append user
+    database[company_id][:users].append user
   end
-  index
+  database
 end
 
 def build_company_report(company)

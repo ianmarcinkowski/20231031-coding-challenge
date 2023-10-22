@@ -23,7 +23,32 @@ describe 'App' do
       "name": "Majid M"
     }
   }
-  describe 'create_index' do
+  describe 'symbolize_keys' do
+    it 'converts hash keys from strings to symbols' do
+      string_keyed_hash = {
+        "foo" => 1,
+      }
+      symbolized_hash = symbolize_keys(string_keyed_hash)
+      expect(symbolized_hash[:foo]).to eq(1)
+    end
+
+    it 'keeps symbolized keys' do
+      string_keyed_hash = {
+        :wow => 99
+      }
+      symbolized_hash = symbolize_keys(string_keyed_hash)
+      expect(symbolized_hash[:wow]).to eq(99)
+    end
+    it 'keeps symbolized keys' do
+      string_keyed_hash = {
+        :wow => 99
+      }
+      symbolized_hash = symbolize_keys(string_keyed_hash)
+      expect(symbolized_hash[:wow]).to eq(99)
+    end
+  end
+
+  describe 'build_database' do
     it 'adds user to company' do
       companies = [
         company_acme
@@ -32,19 +57,20 @@ describe 'App' do
         user_one
       ]
 
-      index = create_index(companies, users)
-      expect(index[1]).to include(
-                            {
-                              :id => 1,
-                              :name => "ACME inc.",
-                              :users => [
-                                {
-                                  :id => 5,
-                                  :company_id => 1,
-                                  :name => "Tanya T"
-                                }
-                              ]
-                            })
+      database = build_database(companies, users)
+      expect(database[1]).to include({
+                                       :id => 1,
+                                       :name => "ACME inc.",
+                                       :users => [
+                                         {
+                                           :id => 5,
+                                           :company_id => 1,
+                                           :first_name => "Tanya",
+                                           :last_name => "T",
+                                           :email => "tanyat@example.com"
+                                         }
+                                       ]
+                                     })
     end
 
     it 'adds multiple users to company' do
@@ -56,8 +82,8 @@ describe 'App' do
         user_two
       ]
 
-      index = create_index(companies, users)
-      company_users = index[1][:users]
+      database = build_database(companies, users)
+      company_users = database[1][:users]
       expect(company_users.size).to eq(2)
     end
   end
