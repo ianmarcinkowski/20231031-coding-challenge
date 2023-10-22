@@ -6,7 +6,7 @@ describe 'Guiding Test' do
       {
         "id": 1,
         "first_name": "Tanya",
-        "last_name": "Nichols",
+        "last_name": "T",
         "email": "tanyat@example.com",
         "company_id": 1,
         "email_status": true,
@@ -14,7 +14,6 @@ describe 'Guiding Test' do
         "tokens": 111,
       }
     }
-
     let(:user_inactive) {
       {
         "id": 1,
@@ -32,7 +31,7 @@ describe 'Guiding Test' do
         "id": 1,
         "name": "Blue Cat Inc.",
         "top_up": 71,
-        "email_status": false
+        "email_status": true
       }
     }
     it 'creates text output for a company and user' do
@@ -44,7 +43,7 @@ describe 'Guiding Test' do
       expect(text).not_to be_nil
       expect(text).to include("Company Id: 1")
       expect(text).to include("Company Name: Blue Cat Inc.")
-      expect(text).to include("Nichols, Tanya, tanyat@example.com")
+      expect(text).to include("T, Tanya, tanyat@example.com")
       expect(text).to include("Previous Token Balance, 111")
       expect(text).to include("New Token Balance 182")
       expect(text).to include("Total amount of top ups for Blue Cat Inc.: 71")
@@ -59,11 +58,11 @@ describe 'Guiding Test' do
       expect(text).not_to be_nil
       expect(text).to include(<<~TEXT)
         Users Emailed:
-          Nichols, Tanya, tanyat@example.com
+        T, Tanya, tanyat@example.com
       TEXT
       expect(text).to include(<<~TEXT)
         Users Not Emailed:
-          S, Sam, sams@example.com
+        S, Sam, sams@example.com
       TEXT
     end
 

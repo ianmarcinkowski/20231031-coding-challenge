@@ -75,22 +75,29 @@ def build_company_report(company)
     Company Name: #{company[:name]}
   REPORT
 
-  emailed_users = company[:users].filter {
-    |user| user[:email_status] && user[:active_status]
-  }.sort_by { |user| [user[:last_name], user[:first_name]] }
+  if company[:email_status]
+    emailed_users = company[:users].filter {
+      |user| user[:email_status] && user[:active_status]
+    }.sort_by { |user| [user[:last_name], user[:first_name]] }
+    not_emailed_users = company[:users].filter {
+      |user| !user[:email_status] || !user[:active_status]
+    }.sort_by { |user| [user[:last_name], user[:first_name]] }
+  else
+    emailed_users = []
+    not_emailed_users = company[:users].sort_by {
+      |user| [user[:last_name], user[:first_name]] }
+  end
+
   report += <<~REPORT
     Users Emailed:
-    REPORT
+  REPORT
   emailed_users.map do |user|
     report += build_user_report(user)
   end
 
-  not_emailed_users = company[:users].filter {
-    |user| !user[:email_status] || !user[:active_status]
-  }.sort_by { |user| [user[:last_name], user[:first_name]] }
   report += <<~REPORT
     Users Not Emailed:
-    REPORT
+  REPORT
   not_emailed_users.map do |user|
     report += build_user_report(user)
   end

@@ -111,7 +111,6 @@ describe 'App' do
         Company Id: 1
         Company Name: ACME inc.
       FILE
-
     end
 
     describe 'users'
@@ -125,7 +124,21 @@ describe 'App' do
         Company Id: 1
         Company Name: ACME inc.
       FILE
+    end
 
+    context 'when company email is disabled' do
+      it 'does not send emails for any users' do
+        company_acme[:email_status] = false
+        company_acme[:users] = [
+          user_tanya
+        ]
+
+        report = build_company_report(company_acme)
+        expect(report).to include(<<~TEXT)
+          Users Not Emailed:
+          T, Tanya, tanyat@example.com
+        TEXT
+      end
     end
   end
 
