@@ -17,7 +17,6 @@ describe 'App' do
       "last_name": "T",
       "email": "tanyat@example.com",
       "tokens": 99,
-      "previous_tokens": 54,
       "active_status": true,
       "email_status": true
     }
@@ -30,7 +29,6 @@ describe 'App' do
       "last_name": "M",
       "email": "majidm@example.com",
       "tokens": 0,
-      "previous_tokens": 1000,
       "active_status": true,
       "email_status": true
     }
@@ -70,19 +68,20 @@ describe 'App' do
       ]
 
       database = build_database(companies, users)
-      expect(database[1]).to include({
-                                       :id => 1,
-                                       :name => "ACME inc.",
-                                       :users => [
-                                         {
-                                           :id => 5,
-                                           :company_id => 1,
-                                           :first_name => "Tanya",
-                                           :last_name => "T",
-                                           :email => "tanyat@example.com"
-                                         }
-                                       ]
-                                     })
+      company = database[1]
+      expect(company).to include({
+                                   :id => 1,
+                                   :name => "ACME inc.",
+                                 })
+      expect(company[:users].first).to include(
+                                   {
+                                     :id => 5,
+                                     :company_id => 1,
+                                     :first_name => "Tanya",
+                                     :last_name => "T",
+                                     :email => "tanyat@example.com"
+                                   }
+                                 )
     end
 
     it 'adds multiple users to company' do
@@ -131,18 +130,28 @@ describe 'App' do
   end
 
   describe 'build_user_report' do
+    let(:user) {
+      {
+        :id => 12,
+        :first_name => "Ian",
+        :last_name => "M",
+        :email => "ian@desrt.ca",
+        :tokens => 999,
+        :token_history => [100, 50, 10]
+      }
+    }
     describe 'users'
-    it 'contains company details' do
-      report = build_user_report(user_tanya)
+    it 'contains user details' do
+      report = build_user_report(user)
       expect(report).to match <<~FILE.chomp
-        T, Tanya, tanyat@example.com
-          Previous Token Balance, 99
-          New Token Balance 54
+        M, Ian, ian@desrt.ca
+          Previous Token Balance, 100
+          New Token Balance 999
       FILE
     end
   end
 
-  describe 'update_user_balances' do
+  describe 'process_token_top_ups!' do
     let(:company) {
       {
         :id => 1,
@@ -162,7 +171,7 @@ describe 'App' do
         [company],
         [active_user]
       )
-      report = update_user_balances!(database)
+      report = process_token_top_ups!(database)
       expect(database[1][:users].first).to include({ :tokens => 123 })
     end
 
@@ -171,8 +180,31 @@ describe 'App' do
         [company],
         [active_user]
       )
-      report = update_user_balances!(database)
+      report = process_token_top_ups!(database)
       expect(database[1][:top_ups_given]).to eq(23)
+    end
+  end
+
+  describe 'update_user_tokens!' do
+    let(:user) {
+      {
+        :tokens => 0,
+      }
+    }
+    it 'creates token history' do
+      update_user_tokens!(user, 11)
+      expect(user[:token_history].first).to eq(0)
+    end
+
+    it 'preserves token history' do
+      user[:token_history] = [100, 50, 0]
+      update_user_tokens!(user, 1)
+      expect(user[:token_history].size).to eq(4)
+    end
+
+    it 'adds tokens' do
+      update_user_tokens!(user, 99)
+      expect(user[:tokens]).to eq(99)
     end
   end
 end

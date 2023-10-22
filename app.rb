@@ -17,7 +17,7 @@ end
 
 def app(companies, users)
   database = build_database(companies, users)
-  update_user_balances!(database)
+  process_token_top_ups!(database)
   report = ""
   database.values.map do |company|
     report += build_company_report(company)
@@ -41,18 +41,27 @@ def build_database(companies, users)
   database
 end
 
-def update_user_balances!(database)
+def process_token_top_ups!(database)
   database.values.map do |company|
     unless company[:top_ups_given]
       company[:top_ups_given] = 0
     end
     top_up_amount = company[:top_up]
     company[:users].filter { |user| user[:active_status] }.map do |user|
-      user[:tokens] += top_up_amount
+      update_user_tokens!(user, top_up_amount)
       company[:top_ups_given] += top_up_amount
     end
   end
   database
+end
+
+def update_user_tokens!(user, amount)
+  unless user[:token_history]
+    user[:token_history] = []
+  end
+  current_tokens = user[:tokens]
+  user[:token_history].unshift(current_tokens)
+  user[:tokens] = current_tokens + amount
 end
 
 def build_company_report(company)
@@ -85,10 +94,16 @@ def build_company_report(company)
 end
 
 def build_user_report(user)
+  if user[:token_history]
+    previous_balance = user[:token_history].first
+  else
+    previous_balance = ""
+  end
+  current_balance = user[:tokens]
   report = <<~REPORT
     #{user[:last_name]}, #{user[:first_name]}, #{user[:email]}
-      Previous Token Balance, #{user[:tokens]}
-      New Token Balance #{user[:previous_tokens]}
+      Previous Token Balance, #{previous_balance}
+      New Token Balance #{current_balance}
   REPORT
 end
 
