@@ -76,6 +76,42 @@ describe 'Guiding Test' do
           "email_status": true
         }
       }
+      let(:user_z) {
+        {
+          "id": 10,
+          "first_name": "Zee",
+          "last_name": "Zebra",
+          "email": "zebra@example.com",
+          "company_id": 1,
+          "email_status": true,
+          "active_status": true,
+          "tokens": 111,
+        }
+      }
+      let(:user_sb) {
+        {
+          "id": 11,
+          "first_name": "Bacon",
+          "last_name": "Super",
+          "email": "sb@example.com",
+          "company_id": 1,
+          "email_status": true,
+          "active_status": true,
+          "tokens": 111,
+        }
+      }
+      let(:user_sa) {
+        {
+          "id": 12,
+          "first_name": "Aardvark",
+          "last_name": "Super",
+          "email": "sa@example.com",
+          "company_id": 1,
+          "email_status": true,
+          "active_status": true,
+          "tokens": 111,
+        }
+      }
 
       it 'sorts by company ID' do
         users = []
@@ -87,6 +123,20 @@ describe 'Guiding Test' do
         company_one_idx = text.index("Company Id: 1")
         company_ninty_nine_idx = text.index("Company Id: 99")
         expect(company_one_idx).to be < company_ninty_nine_idx
+      end
+
+      it 'sorts by user last, first name' do
+        users = [user_z, user_sb, user_sa]
+        companies = [company]
+
+        text = app(companies, users)
+
+        expect(text).not_to be_nil
+        sa_index = text.index("Super, Aardvark, sa@example.com")
+        sb_index = text.index("Super, Bacon, sb@example.com")
+        z_index = text.index("Zebra, Zee, zebra@example.com")
+        expect(sa_index).to be < sb_index
+        expect(sb_index).to be < z_index
       end
     end
   end

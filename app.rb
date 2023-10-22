@@ -38,6 +38,11 @@ def build_database(companies, users)
     company_id = user[:company_id]
     database[company_id][:users].append user
   end
+  # TODO: Not loving this.  Sorting is a presentation issue
+  # I'm going to leave it as an example of a trade-off made during
+  # a refactoring, but call it out as a future improvement
+  # I would much prefer to sort at the moment I am consuming the DB,
+  # like I am with the users
   database = database.sort
 end
 
@@ -72,7 +77,7 @@ def build_company_report(company)
 
   emailed_users = company[:users].filter {
     |user| user[:email_status] && user[:active_status]
-  }
+  }.sort_by { |user| [user[:last_name], user[:first_name]] }
   report += <<~REPORT
     Users Emailed:
     REPORT
@@ -82,7 +87,7 @@ def build_company_report(company)
 
   not_emailed_users = company[:users].filter {
     |user| !user[:email_status] || !user[:active_status]
-  }
+  }.sort_by { |user| [user[:last_name], user[:first_name]] }
   report += <<~REPORT
     Users Not Emailed:
     REPORT
