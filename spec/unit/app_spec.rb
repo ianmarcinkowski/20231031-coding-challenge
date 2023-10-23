@@ -197,7 +197,7 @@ describe 'App' do
       expect(company[:users].first).to include({ :tokens => 123 })
     end
 
-    it 'does not top up inactive users' do
+    it 'does not top up inactive user' do
       database = build_database(
         [company],
         [inactive_user]
@@ -212,7 +212,7 @@ describe 'App' do
         [company],
         [active_user]
       )
-      report = process_token_top_ups!(database)
+      process_token_top_ups!(database)
       _, company = database[0]
       expect(company[:top_ups_given]).to eq(23)
     end
@@ -224,20 +224,40 @@ describe 'App' do
         :tokens => 0,
       }
     }
-    it 'creates token history' do
-      update_user_tokens!(user, 11)
-      expect(user[:token_history].first).to eq(0)
+    context 'active user' do
+      it 'creates token history' do
+        update_user_tokens!(user, 11)
+        expect(user[:token_history].first).to eq(0)
+      end
+
+      it 'preserves token history' do
+        user[:token_history] = [100, 50, 0]
+        update_user_tokens!(user, 1)
+        expect(user[:token_history].size).to eq(4)
+      end
+
+      it 'adds tokens' do
+        update_user_tokens!(user, 99)
+        expect(user[:tokens]).to eq(99)
+      end
     end
 
-    it 'preserves token history' do
-      user[:token_history] = [100, 50, 0]
-      update_user_tokens!(user, 1)
-      expect(user[:token_history].size).to eq(4)
-    end
+    context 'inactive user' do
+      let(:inactive_user) {
+        {
+          :tokens => 17,
+          :active_status => false
+        }
+      }
+      it 'creates token history' do
+        update_user_tokens!(inactive_user, 19)
+        expect(inactive_user[:token_history].first).to eq(17)
+      end
 
-    it 'adds tokens' do
-      update_user_tokens!(user, 99)
-      expect(user[:tokens]).to eq(99)
+      it 'does not add tokens' do
+        update_user_tokens!(inactive_user, 1000)
+        expect(inactive_user[:tokens]).to eq(17)
+      end
     end
   end
 end

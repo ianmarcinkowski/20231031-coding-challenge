@@ -58,7 +58,7 @@ def process_token_top_ups!(database)
       company[:top_ups_given] = 0
     end
     top_up_amount = company[:top_up]
-    company[:users].filter { |user| user[:active_status] }.map do |user|
+    company[:users].map do |user|
       update_user_tokens!(user, top_up_amount)
       company[:top_ups_given] += top_up_amount
     end
@@ -72,7 +72,9 @@ def update_user_tokens!(user, amount)
   end
   current_tokens = user[:tokens]
   user[:token_history].unshift(current_tokens)
-  user[:tokens] = current_tokens + amount
+  if user[:active_status] || user[:active_status].nil?
+    user[:tokens] = current_tokens + amount
+  end
 end
 
 def build_company_report(company)
