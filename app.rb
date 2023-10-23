@@ -2,17 +2,23 @@ require 'json'
 
 # Create an entrypoint to separate the concerns of running this application
 # as a script from the domain logic.
-def entry_point(companies_path, users_path)
+def entry_point(companies_path, users_path, output_path)
   puts "companies file: #{companies_path}"
   puts "users file: #{users_path}"
+  puts "output file: #{output_path}"
 
   companies_file = File.open companies_path
   users_file = File.open users_path
 
   companies = JSON.load companies_file
   users = JSON.load users_file
+  companies_file.close
+  users_file.close
   report = app(companies, users)
-  puts report
+
+  output_file = File.open(output_path, 'w')
+  output_file.write(report)
+  output_file.close
 end
 
 def app(companies, users)

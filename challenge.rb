@@ -16,6 +16,10 @@ class Parser
         args[:user_file] = path
       end
 
+      parser.on("-o", "--output=OUTPUT", String, "Output file path") do |path|
+        args[:output_file] = path
+      end
+
       parser.on("-h", "--help", "Prints help message") do
         puts parser
         exit
@@ -38,8 +42,13 @@ def run_challenge(args)
     exit(1)
   end
 
+  unless args.has_key?(:output_file)
+    puts "Output file required"
+    exit(1)
+  end
+
   puts args
-  entry_point(args[:company_file], args[:user_file])
+  entry_point(args[:company_file], args[:user_file], args[:output_file])
 end
 
 args = Parser.parse(ARGV)
