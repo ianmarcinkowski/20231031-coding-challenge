@@ -43,8 +43,7 @@ def run_challenge(args)
   end
 
   unless args.has_key?(:output_file)
-    puts "Output file required"
-    exit(1)
+    args[:output_file] = 'output.txt'
   end
 
   puts args
