@@ -135,8 +135,8 @@ describe 'App' do
 
         report = build_company_report(company_acme)
         expect(report).to include(<<~TEXT)
-          Users Not Emailed:
-          T, Tanya, tanyat@example.com
+        Users Not Emailed:
+            T, Tanya, tanyat@example.com
         TEXT
       end
     end
@@ -156,10 +156,10 @@ describe 'App' do
     describe 'users'
     it 'contains user details' do
       report = build_user_report(user)
-      expect(report).to match <<~FILE.chomp
-        M, Ian, ian@desrt.ca
-          Previous Token Balance, 100
-          New Token Balance 999
+      expect(report).to match <<-FILE.chomp
+    M, Ian, ian@desrt.ca
+      Previous Token Balance, 100
+      New Token Balance 999
       FILE
     end
   end
