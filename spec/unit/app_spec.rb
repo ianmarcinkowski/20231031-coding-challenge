@@ -179,6 +179,14 @@ describe 'App' do
         :active_status => true
       }
     }
+    let(:inactive_user) {
+      {
+        :id => 101,
+        :company_id => 1,
+        :tokens => 0,
+        :active_status => false
+      }
+    }
     it 'adds tokens for active users' do
       database = build_database(
         [company],
@@ -187,6 +195,16 @@ describe 'App' do
       report = process_token_top_ups!(database)
       _, company = database[0]
       expect(company[:users].first).to include({ :tokens => 123 })
+    end
+
+    it 'does not top up inactive users' do
+      database = build_database(
+        [company],
+        [inactive_user]
+      )
+      report = process_token_top_ups!(database)
+      _, company = database[0]
+      expect(company[:users].first).to include({ :tokens => 0 })
     end
 
     it 'tracks top ups given' do
