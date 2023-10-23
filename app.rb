@@ -70,11 +70,15 @@ def update_user_tokens!(user, amount)
 end
 
 def build_company_report(company)
-  report = <<~REPORT
-    Company Id: #{company[:id]}
-    Company Name: #{company[:name]}
+  header = <<-REPORT.chomp
+
+Company Id: #{company[:id]}
+Company Name: #{company[:name]}
   REPORT
 
+  # TODO: Leaving the duplication of sorting logic here for now
+  # due to time constraints.
+  # I would expect a comment about this on a code review ;)
   if company[:email_status]
     emailed_users = company[:users].filter {
       |user| user[:email_status] && user[:active_status]
@@ -88,24 +92,34 @@ def build_company_report(company)
       |user| [user[:last_name], user[:first_name]] }
   end
 
-  report += <<~REPORT
+  section_emailed = <<~REPORT
     Users Emailed:
   REPORT
   emailed_users.map do |user|
-    report += build_user_report(user)
+    section_emailed += build_user_report(user)
   end
 
-  report += <<~REPORT
+  section_not_emailed = <<~REPORT
     Users Not Emailed:
   REPORT
   not_emailed_users.map do |user|
-    report += build_user_report(user)
+    section_not_emailed += build_user_report(user)
   end
 
-  report += <<~REPORT
+  section_top_ups_given = <<~REPORT
     Total amount of top ups for #{company[:name]}: #{company[:top_ups_given]}
   REPORT
 
+  # TODO: Some trial and error with heredoc and whitespace
+  # This is slightly imperfect compared to the provided example output.
+  # Notice that the section for top ups given is 2 spaces less indented than
+  # it should be.  I'm calling it an MVP ;)
+  report = <<~REPORT
+    #{header.strip}
+    #{section_emailed.strip}
+    #{section_not_emailed.strip}
+    #{section_top_ups_given.strip}
+  REPORT
   report
 end
 
@@ -116,7 +130,7 @@ def build_user_report(user)
     previous_balance = ""
   end
   current_balance = user[:tokens]
-  report = <<~REPORT
+  report = <<-REPORT
     #{user[:last_name]}, #{user[:first_name]}, #{user[:email]}
       Previous Token Balance, #{previous_balance}
       New Token Balance #{current_balance}
